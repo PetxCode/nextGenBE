@@ -115,36 +115,135 @@ export const stage1Score = async (
   try {
     const { userID } = req.params;
     const user: any = await userModel.findById(userID);
-    const { mark, question, option, correct, questionID } = req.body;
+    const {
+      // mark,
+      // question,
+      // option,
+      // correct,
+      // questionID,
+      // started...
+      name,
+      option,
+      pickedAt,
+      time,
+      point,
+      school,
+      stage,
+      correct,
+      questionID,
+    } = req.body;
+    //
     if (user) {
-      const updated = await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage1Result: [
-            ...user?.stage1Result,
-            { mark, question, option, correct },
-          ],
-        },
-        { new: true }
+      // return res.status(201).json({
+      //   message: "Account created",
+      //   data: {
+      //     name,
+      //     option,
+      //     pickedAt,
+      //     time,
+      //     point,
+      //     school,
+      //     stage,
+      //     correct,
+      //     questionID,
+      //   },
+      //   status: 201,
+      // });
+
+      const getResult = await userModel.findById(userID);
+
+      const check = getResult?.stage1Result.some(
+        (el: any) => el.questionID === questionID
       );
 
-      await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage1Score: user?.stage1Result
-            .map((el: any) => el.mark)
-            .reduce((a: number, b: number) => {
-              return a + b;
-            }, 0),
-        },
-        { new: true }
-      );
+      if (check) {
+        let getData = getResult?.stage1Result.find(
+          (el: any) => el.questionID === questionID
+        );
+        // console.log("first approch: ", getData);
 
-      return res.status(201).json({
-        message: "Account created",
-        data: updated,
-        status: 201,
-      });
+        getData = {
+          name,
+          option,
+          pickedAt,
+          time,
+          point,
+          school,
+          stage,
+          correct,
+          questionID,
+        };
+
+        let x: any = getResult?.stage1Result.filter(
+          (el: any) => el.questionID !== questionID
+        );
+
+        x.push(getData);
+
+        await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage1Result: x,
+          },
+          { new: true }
+        );
+
+        const readResult = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage1Score: user?.stage1Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+
+        return res.status(201).json({
+          message: "result entered",
+          data: readResult,
+          status: 201,
+        });
+      } else {
+        const updated = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage1Result: [
+              ...user?.stage1Result,
+              {
+                questionID,
+                name,
+                option,
+                pickedAt,
+                time,
+                point,
+                school,
+                stage,
+                correct,
+              },
+            ],
+          },
+          { new: true }
+        );
+
+        await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage1Score: user?.stage1Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+        return res.status(201).json({
+          message: "result entered",
+          data: updated,
+          status: 201,
+        });
+      }
     } else {
       return res.status(404).json({
         message: "user doesn't exist",

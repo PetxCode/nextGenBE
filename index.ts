@@ -31,13 +31,17 @@ io.on(
     socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
   ) => {
     console.log("user connected");
+
     socket.on("question", (res) => {
       io.emit("question", res);
-      io.emit("nullValue", null);
+    });
+
+    socket?.on("test", (res) => {
+      io.emit("test", res);
     });
 
     socket.on("questionNumber", (question) => {
-      io.emit("questionNumber", question);
+      io.emit("questionNumber", { question, reset: null });
     });
 
     socket.on("presentStage", (stage) => {
