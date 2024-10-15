@@ -6,7 +6,13 @@ const userModel = new mongoose_1.Schema({
         type: String,
         default: "student",
     },
-    name: {
+    presentClass: {
+        type: String,
+    },
+    firstName: {
+        type: String,
+    },
+    lastName: {
         type: String,
     },
     email: {
@@ -19,7 +25,7 @@ const userModel = new mongoose_1.Schema({
     schoolName: {
         type: String,
     },
-    phoneNumber: {
+    phone: {
         type: String,
         default: "080",
     },

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
 const userModel_1 = __importDefault(require("../model/userModel"));
+const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
 const createAdminAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, password, schoolName, phoneNumber, avatar } = req.body;
@@ -42,14 +43,17 @@ const createAdminAccount = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.createAdminAccount = createAdminAccount;
 const createAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, email, password, schoolName, phoneNumber, avatar } = req.body;
+        const { firstName, lastName, email, password, schoolName, phone, presentClass, } = req.body;
+        const { secure_url } = yield cloudinary_1.default.uploader.upload(req.file.path);
         const userAccount = yield userModel_1.default.create({
-            name,
+            firstName,
+            lastName,
             email,
             password,
             schoolName,
-            phoneNumber,
-            avatar,
+            phone,
+            avatar: secure_url,
+            presentClass,
         });
         return res.status(201).json({
             message: "Account created",
@@ -101,24 +105,69 @@ const stage1Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
-        const { mark, question, option, correct, questionID } = req.body;
+        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        //
         if (user) {
-            const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage1Result: [
-                    ...user === null || user === void 0 ? void 0 : user.stage1Result,
-                    { mark, question, option, correct },
-                ],
-            }, { new: true });
-            yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage1Score: user === null || user === void 0 ? void 0 : user.stage1Result.map((el) => el.mark).reduce((a, b) => {
-                    return a + b;
-                }, 0),
-            }, { new: true });
-            return res.status(201).json({
-                message: "Account created",
-                data: updated,
-                status: 201,
-            });
+            const getResult = yield userModel_1.default.findById(userID);
+            const check = getResult === null || getResult === void 0 ? void 0 : getResult.stage1Result.some((el) => el.questionID === questionID);
+            if (check) {
+                let getData = getResult === null || getResult === void 0 ? void 0 : getResult.stage1Result.find((el) => el.questionID === questionID);
+                // console.log("first approch: ", getData);
+                getData = {
+                    name,
+                    option,
+                    pickedAt,
+                    time,
+                    point,
+                    school,
+                    stage,
+                    correct,
+                    questionID,
+                };
+                let x = getResult === null || getResult === void 0 ? void 0 : getResult.stage1Result.filter((el) => el.questionID !== questionID);
+                x.push(getData);
+                const dataArray = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage1Result: x,
+                }, { new: true });
+                const readResult = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage1Score: dataArray === null || dataArray === void 0 ? void 0 : dataArray.stage1Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: readResult,
+                    status: 201,
+                });
+            }
+            else {
+                const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage1Result: [
+                        ...user === null || user === void 0 ? void 0 : user.stage1Result,
+                        {
+                            questionID,
+                            name,
+                            option,
+                            pickedAt,
+                            time,
+                            point,
+                            school,
+                            stage,
+                            correct,
+                        },
+                    ],
+                }, { new: true });
+                yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage1Score: updated === null || updated === void 0 ? void 0 : updated.stage1Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: updated,
+                    status: 201,
+                });
+            }
         }
         else {
             return res.status(404).json({
@@ -138,20 +187,68 @@ const stage2Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
+        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        //
         if (user) {
-            const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage2Result: [...user === null || user === void 0 ? void 0 : user.stage2Result, req.body],
-            }, { new: true });
-            yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage2Score: user === null || user === void 0 ? void 0 : user.stage2Result.map((el) => el.mark).reduce((a, b) => {
-                    return a + b;
-                }, 0),
-            }, { new: true });
-            return res.status(201).json({
-                message: "user score recorded successfully",
-                data: updated,
-                status: 201,
-            });
+            const getResult = yield userModel_1.default.findById(userID);
+            const check = getResult === null || getResult === void 0 ? void 0 : getResult.stage2Result.some((el) => el.questionID === questionID);
+            if (check) {
+                let getData = getResult === null || getResult === void 0 ? void 0 : getResult.stage2Result.find((el) => el.questionID === questionID);
+                getData = {
+                    name,
+                    option,
+                    pickedAt,
+                    time,
+                    point,
+                    school,
+                    stage,
+                    correct,
+                    questionID,
+                };
+                let x = getResult === null || getResult === void 0 ? void 0 : getResult.stage2Result.filter((el) => el.questionID !== questionID);
+                x.push(getData);
+                const data = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage2Result: x,
+                }, { new: true });
+                const readResult = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage2Score: data === null || data === void 0 ? void 0 : data.stage2Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: readResult,
+                    status: 201,
+                });
+            }
+            else {
+                const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage2Result: [
+                        ...user === null || user === void 0 ? void 0 : user.stage2Result,
+                        {
+                            questionID,
+                            name,
+                            option,
+                            pickedAt,
+                            time,
+                            point,
+                            school,
+                            stage,
+                            correct,
+                        },
+                    ],
+                }, { new: true });
+                yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage2Score: updated === null || updated === void 0 ? void 0 : updated.stage2Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: updated,
+                    status: 201,
+                });
+            }
         }
         else {
             return res.status(404).json({
@@ -171,20 +268,68 @@ const stage3Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
+        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        //
         if (user) {
-            const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage3Result: [...user === null || user === void 0 ? void 0 : user.stage3Result, req.body],
-            }, { new: true });
-            yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage3Score: user === null || user === void 0 ? void 0 : user.stage3Result.map((el) => el.mark).reduce((a, b) => {
-                    return a + b;
-                }, 0),
-            }, { new: true });
-            return res.status(201).json({
-                message: "user score recorded successfully",
-                data: updated,
-                status: 201,
-            });
+            const getResult = yield userModel_1.default.findById(userID);
+            const check = getResult === null || getResult === void 0 ? void 0 : getResult.stage3Result.some((el) => el.questionID === questionID);
+            if (check) {
+                let getData = getResult === null || getResult === void 0 ? void 0 : getResult.stage3Result.find((el) => el.questionID === questionID);
+                getData = {
+                    name,
+                    option,
+                    pickedAt,
+                    time,
+                    point,
+                    school,
+                    stage,
+                    correct,
+                    questionID,
+                };
+                let x = getResult === null || getResult === void 0 ? void 0 : getResult.stage3Result.filter((el) => el.questionID !== questionID);
+                x.push(getData);
+                const data = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage3Result: x,
+                }, { new: true });
+                const readResult = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage3Score: data === null || data === void 0 ? void 0 : data.stage3Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: readResult,
+                    status: 201,
+                });
+            }
+            else {
+                const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage3Result: [
+                        ...user === null || user === void 0 ? void 0 : user.stage3Result,
+                        {
+                            questionID,
+                            name,
+                            option,
+                            pickedAt,
+                            time,
+                            point,
+                            school,
+                            stage,
+                            correct,
+                        },
+                    ],
+                }, { new: true });
+                yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage3Score: updated === null || updated === void 0 ? void 0 : updated.stage3Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: updated,
+                    status: 201,
+                });
+            }
         }
         else {
             return res.status(404).json({
@@ -204,20 +349,68 @@ const stage4Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
+        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        //
         if (user) {
-            const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage4Result: [...user === null || user === void 0 ? void 0 : user.stage4Result, req.body],
-            }, { new: true });
-            yield userModel_1.default.findByIdAndUpdate(userID, {
-                stage4Score: user === null || user === void 0 ? void 0 : user.stage4Result.map((el) => el.mark).reduce((a, b) => {
-                    return a + b;
-                }, 0),
-            }, { new: true });
-            return res.status(201).json({
-                message: "user score recorded successfully",
-                data: updated,
-                status: 201,
-            });
+            const getResult = yield userModel_1.default.findById(userID);
+            const check = getResult === null || getResult === void 0 ? void 0 : getResult.stage4Result.some((el) => el.questionID === questionID);
+            if (check) {
+                let getData = getResult === null || getResult === void 0 ? void 0 : getResult.stage4Result.find((el) => el.questionID === questionID);
+                getData = {
+                    name,
+                    option,
+                    pickedAt,
+                    time,
+                    point,
+                    school,
+                    stage,
+                    correct,
+                    questionID,
+                };
+                let x = getResult === null || getResult === void 0 ? void 0 : getResult.stage4Result.filter((el) => el.questionID !== questionID);
+                x.push(getData);
+                const data = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage4Result: x,
+                }, { new: true });
+                const readResult = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage4Score: data === null || data === void 0 ? void 0 : data.stage4Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: readResult,
+                    status: 201,
+                });
+            }
+            else {
+                const updated = yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage4Result: [
+                        ...user === null || user === void 0 ? void 0 : user.stage4Result,
+                        {
+                            questionID,
+                            name,
+                            option,
+                            pickedAt,
+                            time,
+                            point,
+                            school,
+                            stage,
+                            correct,
+                        },
+                    ],
+                }, { new: true });
+                yield userModel_1.default.findByIdAndUpdate(userID, {
+                    stage4Score: updated === null || updated === void 0 ? void 0 : updated.stage4Result.map((el) => el.point).reduce((a, b) => {
+                        return a + b;
+                    }, 0),
+                }, { new: true });
+                return res.status(201).json({
+                    message: "result entered",
+                    data: updated,
+                    status: 201,
+                });
+            }
         }
         else {
             return res.status(404).json({

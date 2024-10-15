@@ -16,9 +16,11 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const node_http_1 = __importDefault(require("node:http"));
 const socket_io_1 = require("socket.io");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const dbConfig_1 = require("./utils/dbConfig");
 const userRouter_1 = __importDefault(require("./router/userRouter"));
-const port = 2211;
+const port = process.env.PORT || 2244;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
@@ -26,7 +28,7 @@ app.use("/api", userRouter_1.default);
 const server = node_http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "http://localhost:8080, https://just-nextgen.web.app",
         methods: ["GET", "POST"],
     },
 });
@@ -34,10 +36,15 @@ io.on("connection", (socket) => {
     console.log("user connected");
     socket.on("question", (res) => {
         io.emit("question", res);
-        io.emit("nullValue", null);
+    });
+    socket === null || socket === void 0 ? void 0 : socket.on("test", (res) => {
+        io.emit("test", res);
     });
     socket.on("questionNumber", (question) => {
-        io.emit("questionNumber", question);
+        io.emit("questionNumber", { question, reset: null, numb: 20 });
+    });
+    socket.on("num", () => {
+        io.emit("num", 20);
     });
     socket.on("presentStage", (stage) => {
         io.emit("presentStage", stage);

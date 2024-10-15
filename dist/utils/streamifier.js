@@ -12,20 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dbConfig = void 0;
-const mongoose_1 = require("mongoose");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-// const url: string = "mongodb://127.0.0.1:27017/stemDB";
-const url = "mongodb+srv://skillscapeofficier:skillscapeofficier@cluster0.0dubq.mongodb.net/nextGenDB?retryWrites=true&w=majority&appName=Cluster0";
-const dbConfig = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, mongoose_1.connect)(url)
-        .then(() => {
-        console.clear();
-        console.log("db Connected ❤️❤️🚀🚀🎮");
-    })
-        .catch((err) => {
-        console.error(err);
-    });
+exports.streamUpload = void 0;
+const cloudinary_1 = __importDefault(require("./cloudinary"));
+const streamifier_1 = __importDefault(require("streamifier"));
+const streamUpload = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
+        let stream = cloudinary_1.default.uploader.upload_stream((error, result) => {
+            if (result) {
+                return resolve(result);
+            }
+            else {
+                return reject(error);
+            }
+        });
+        console.log("Read: ", req === null || req === void 0 ? void 0 : req.file);
+        return streamifier_1.default.createReadStream((_a = req === null || req === void 0 ? void 0 : req.file) === null || _a === void 0 ? void 0 : _a.buffer).pipe(stream);
+    }));
 });
-exports.dbConfig = dbConfig;
+exports.streamUpload = streamUpload;
