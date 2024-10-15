@@ -116,12 +116,6 @@ export const stage1Score = async (
     const { userID } = req.params;
     const user: any = await userModel.findById(userID);
     const {
-      // mark,
-      // question,
-      // option,
-      // correct,
-      // questionID,
-      // started...
       name,
       option,
       pickedAt,
@@ -134,22 +128,6 @@ export const stage1Score = async (
     } = req.body;
     //
     if (user) {
-      // return res.status(201).json({
-      //   message: "Account created",
-      //   data: {
-      //     name,
-      //     option,
-      //     pickedAt,
-      //     time,
-      //     point,
-      //     school,
-      //     stage,
-      //     correct,
-      //     questionID,
-      //   },
-      //   status: 201,
-      // });
-
       const getResult = await userModel.findById(userID);
 
       const check = getResult?.stage1Result.some(
@@ -180,7 +158,7 @@ export const stage1Score = async (
 
         x.push(getData);
 
-        await userModel.findByIdAndUpdate(
+        const dataArray: any = await userModel.findByIdAndUpdate(
           userID,
           {
             stage1Result: x,
@@ -191,7 +169,7 @@ export const stage1Score = async (
         const readResult = await userModel.findByIdAndUpdate(
           userID,
           {
-            stage1Score: user?.stage1Result
+            stage1Score: dataArray?.stage1Result
               .map((el: any) => el.point)
               .reduce((a: number, b: number) => {
                 return a + b;
@@ -230,7 +208,7 @@ export const stage1Score = async (
         await userModel.findByIdAndUpdate(
           userID,
           {
-            stage1Score: user?.stage1Result
+            stage1Score: updated?.stage1Result
               .map((el: any) => el.point)
               .reduce((a: number, b: number) => {
                 return a + b;
@@ -264,33 +242,112 @@ export const stage2Score = async (
   try {
     const { userID } = req.params;
     const user: any = await userModel.findById(userID);
-
+    const {
+      name,
+      option,
+      pickedAt,
+      time,
+      point,
+      school,
+      stage,
+      correct,
+      questionID,
+    } = req.body;
+    //
     if (user) {
-      const updated = await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage2Result: [...user?.stage2Result, req.body],
-        },
-        { new: true }
+      const getResult = await userModel.findById(userID);
+
+      const check = getResult?.stage2Result.some(
+        (el: any) => el.questionID === questionID
       );
 
-      await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage2Score: user?.stage2Result
-            .map((el: any) => el.mark)
-            .reduce((a: number, b: number) => {
-              return a + b;
-            }, 0),
-        },
-        { new: true }
-      );
+      if (check) {
+        let getData = getResult?.stage2Result.find(
+          (el: any) => el.questionID === questionID
+        );
 
-      return res.status(201).json({
-        message: "user score recorded successfully",
-        data: updated,
-        status: 201,
-      });
+        getData = {
+          name,
+          option,
+          pickedAt,
+          time,
+          point,
+          school,
+          stage,
+          correct,
+          questionID,
+        };
+
+        let x: any = getResult?.stage2Result.filter(
+          (el: any) => el.questionID !== questionID
+        );
+
+        x.push(getData);
+
+        const data = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage2Result: x,
+          },
+          { new: true }
+        );
+
+        const readResult = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage2Score: data?.stage2Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+
+        return res.status(201).json({
+          message: "result entered",
+          data: readResult,
+          status: 201,
+        });
+      } else {
+        const updated: any = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage2Result: [
+              ...user?.stage2Result,
+              {
+                questionID,
+                name,
+                option,
+                pickedAt,
+                time,
+                point,
+                school,
+                stage,
+                correct,
+              },
+            ],
+          },
+          { new: true }
+        );
+
+        await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage2Score: updated?.stage2Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+        return res.status(201).json({
+          message: "result entered",
+          data: updated,
+          status: 201,
+        });
+      }
     } else {
       return res.status(404).json({
         message: "user doesn't exist",
@@ -311,33 +368,113 @@ export const stage3Score = async (
   try {
     const { userID } = req.params;
     const user: any = await userModel.findById(userID);
-
+    const {
+      name,
+      option,
+      pickedAt,
+      time,
+      point,
+      school,
+      stage,
+      correct,
+      questionID,
+    } = req.body;
+    //
     if (user) {
-      const updated = await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage3Result: [...user?.stage3Result, req.body],
-        },
-        { new: true }
+      const getResult = await userModel.findById(userID);
+
+      const check = getResult?.stage3Result.some(
+        (el: any) => el.questionID === questionID
       );
 
-      await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage3Score: user?.stage3Result
-            .map((el: any) => el.mark)
-            .reduce((a: number, b: number) => {
-              return a + b;
-            }, 0),
-        },
-        { new: true }
-      );
+      if (check) {
+        let getData = getResult?.stage3Result.find(
+          (el: any) => el.questionID === questionID
+        );
 
-      return res.status(201).json({
-        message: "user score recorded successfully",
-        data: updated,
-        status: 201,
-      });
+        getData = {
+          name,
+          option,
+          pickedAt,
+          time,
+          point,
+          school,
+          stage,
+          correct,
+          questionID,
+        };
+
+        let x: any = getResult?.stage3Result.filter(
+          (el: any) => el.questionID !== questionID
+        );
+
+        x.push(getData);
+
+        const data = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage3Result: x,
+          },
+          { new: true }
+        );
+
+        const readResult = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage3Score: data?.stage3Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+
+        return res.status(201).json({
+          message: "result entered",
+          data: readResult,
+          status: 201,
+        });
+      } else {
+        const updated: any = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage3Result: [
+              ...user?.stage3Result,
+              {
+                questionID,
+                name,
+                option,
+                pickedAt,
+                time,
+                point,
+                school,
+                stage,
+                correct,
+              },
+            ],
+          },
+          { new: true }
+        );
+
+        await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage3Score: updated?.stage3Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+
+        return res.status(201).json({
+          message: "result entered",
+          data: updated,
+          status: 201,
+        });
+      }
     } else {
       return res.status(404).json({
         message: "user doesn't exist",
@@ -358,33 +495,112 @@ export const stage4Score = async (
   try {
     const { userID } = req.params;
     const user: any = await userModel.findById(userID);
-
+    const {
+      name,
+      option,
+      pickedAt,
+      time,
+      point,
+      school,
+      stage,
+      correct,
+      questionID,
+    } = req.body;
+    //
     if (user) {
-      const updated = await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage4Result: [...user?.stage4Result, req.body],
-        },
-        { new: true }
+      const getResult = await userModel.findById(userID);
+
+      const check = getResult?.stage4Result.some(
+        (el: any) => el.questionID === questionID
       );
 
-      await userModel.findByIdAndUpdate(
-        userID,
-        {
-          stage4Score: user?.stage4Result
-            .map((el: any) => el.mark)
-            .reduce((a: number, b: number) => {
-              return a + b;
-            }, 0),
-        },
-        { new: true }
-      );
+      if (check) {
+        let getData = getResult?.stage4Result.find(
+          (el: any) => el.questionID === questionID
+        );
 
-      return res.status(201).json({
-        message: "user score recorded successfully",
-        data: updated,
-        status: 201,
-      });
+        getData = {
+          name,
+          option,
+          pickedAt,
+          time,
+          point,
+          school,
+          stage,
+          correct,
+          questionID,
+        };
+
+        let x: any = getResult?.stage4Result.filter(
+          (el: any) => el.questionID !== questionID
+        );
+
+        x.push(getData);
+
+        const data = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage4Result: x,
+          },
+          { new: true }
+        );
+
+        const readResult = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage4Score: data?.stage4Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+
+        return res.status(201).json({
+          message: "result entered",
+          data: readResult,
+          status: 201,
+        });
+      } else {
+        const updated: any = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage4Result: [
+              ...user?.stage4Result,
+              {
+                questionID,
+                name,
+                option,
+                pickedAt,
+                time,
+                point,
+                school,
+                stage,
+                correct,
+              },
+            ],
+          },
+          { new: true }
+        );
+
+        await userModel.findByIdAndUpdate(
+          userID,
+          {
+            stage4Score: updated?.stage4Result
+              .map((el: any) => el.point)
+              .reduce((a: number, b: number) => {
+                return a + b;
+              }, 0),
+          },
+          { new: true }
+        );
+        return res.status(201).json({
+          message: "result entered",
+          data: updated,
+          status: 201,
+        });
+      }
     } else {
       return res.status(404).json({
         message: "user doesn't exist",

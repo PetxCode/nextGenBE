@@ -9,7 +9,7 @@ import { dbConfig } from "./utils/dbConfig";
 
 import user from "./router/userRouter";
 
-const port: any = 2244;
+const port: any = process.env.PORT || 2244;
 const app: Application = express();
 
 app.use(express.json());
@@ -20,7 +20,7 @@ app.use("/api", user);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:8080",
+    origin: "http://localhost:8080, https://just-nextgen.web.app",
     methods: ["GET", "POST"],
   },
 });
@@ -41,7 +41,11 @@ io.on(
     });
 
     socket.on("questionNumber", (question) => {
-      io.emit("questionNumber", { question, reset: null });
+      io.emit("questionNumber", { question, reset: null, numb: 20 });
+    });
+
+    socket.on("num", () => {
+      io.emit("num", 20);
     });
 
     socket.on("presentStage", (stage) => {
