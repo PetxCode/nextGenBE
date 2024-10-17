@@ -1,6 +1,9 @@
 import { Router } from "express";
 import {
+  addImageGallary,
+  addManyImageGallary,
   createAccount,
+  gallaryView,
   loginAccount,
   readSingleAccount,
   stage1Score,
@@ -11,8 +14,11 @@ import {
 } from "../controller/userController";
 import multer from "multer";
 const router: Router = Router();
-import { fileUpload } from "../utils/multer";
-const upload = multer().single("avatar");
+import { fileManyUpload, fileUpload } from "../utils/multer";
+
+router.route("/multi-upload").post(fileManyUpload, addManyImageGallary);
+router.route("/single-upload").post(fileUpload, addImageGallary);
+router.route("/view-gallary").get(gallaryView);
 
 router.route("/register").post(fileUpload, createAccount);
 router.route("/login").post(loginAccount);

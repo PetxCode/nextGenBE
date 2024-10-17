@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import userModel from "../model/userModel";
 import { streamUpload } from "../utils/streamifier";
 import cloudinary from "../utils/cloudinary";
+import gallaryModel from "../model/imageGallaryModel";
 
 export const createAdminAccount = async (
   req: Request,
@@ -671,6 +672,83 @@ export const deleteUserAccount = async (
   } catch (error: any) {
     return res.status(404).json({
       message: "Error creating account",
+      data: error,
+    });
+  }
+};
+
+export const addImageGallary = async (
+  req: any,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { title } = req.body;
+    const { secure_url, public_id }: any = await cloudinary.uploader.upload(
+      req.file.path
+    );
+
+    const userAccount = await gallaryModel.create({
+      image: secure_url,
+      imageID: public_id,
+      title,
+    });
+
+    return res.status(201).json({
+      message: "image Gallary added successfully",
+      data: userAccount,
+      status: 201,
+    });
+  } catch (error: any) {
+    return res.status(404).json({
+      message: "Error adding image Gallary",
+      data: error,
+    });
+  }
+};
+
+export const addManyImageGallary = async (req: any, res: Response) => {
+  try {
+    const { title } = req.body;
+
+    for (let i of req?.files) {
+      const { secure_url, public_id }: any = await cloudinary.uploader.upload(
+        i.path
+      );
+
+      await gallaryModel.create({
+        image: secure_url,
+        imageID: public_id,
+        title,
+      });
+    }
+    return res.status(201).json({
+      message: "image Gallary added successfully",
+
+      status: 201,
+    });
+  } catch (error: any) {
+    return res.status(404).json({
+      message: "Error adding image Gallary",
+      data: error,
+    });
+  }
+};
+
+export const gallaryView = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const gallary = await gallaryModel.find();
+
+    return res.status(201).json({
+      message: "get all gallary",
+      data: gallary,
+      status: 200,
+    });
+  } catch (error: any) {
+    return res.status(404).json({
+      message: "Errorgetting gallary",
       data: error,
     });
   }

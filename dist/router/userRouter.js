@@ -1,15 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const userController_1 = require("../controller/userController");
-const multer_1 = __importDefault(require("multer"));
 const router = (0, express_1.Router)();
-const multer_2 = require("../utils/multer");
-const upload = (0, multer_1.default)().single("avatar");
-router.route("/register").post(multer_2.fileUpload, userController_1.createAccount);
+const multer_1 = require("../utils/multer");
+router.route("/multi-upload").post(multer_1.fileManyUpload, userController_1.addManyImageGallary);
+router.route("/single-upload").post(multer_1.fileUpload, userController_1.addImageGallary);
+router.route("/view-gallary").get(userController_1.gallaryView);
+router.route("/register").post(multer_1.fileUpload, userController_1.createAccount);
 router.route("/login").post(userController_1.loginAccount);
 router.route("/stage-one/:userID").patch(userController_1.stage1Score);
 router.route("/stage-2/:userID").patch(userController_1.stage2Score);

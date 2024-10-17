@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
+exports.gallaryView = exports.addManyImageGallary = exports.addImageGallary = exports.deleteUserAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
 const userModel_1 = __importDefault(require("../model/userModel"));
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
+const imageGallaryModel_1 = __importDefault(require("../model/imageGallaryModel"));
 const createAdminAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, password, schoolName, phoneNumber, avatar } = req.body;
@@ -479,3 +480,67 @@ const deleteUserAccount = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.deleteUserAccount = deleteUserAccount;
+const addImageGallary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { title } = req.body;
+        const { secure_url, public_id } = yield cloudinary_1.default.uploader.upload(req.file.path);
+        const userAccount = yield imageGallaryModel_1.default.create({
+            image: secure_url,
+            imageID: public_id,
+            title,
+        });
+        return res.status(201).json({
+            message: "image Gallary added successfully",
+            data: userAccount,
+            status: 201,
+        });
+    }
+    catch (error) {
+        return res.status(404).json({
+            message: "Error adding image Gallary",
+            data: error,
+        });
+    }
+});
+exports.addImageGallary = addImageGallary;
+const addManyImageGallary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { title } = req.body;
+        for (let i of req === null || req === void 0 ? void 0 : req.files) {
+            const { secure_url, public_id } = yield cloudinary_1.default.uploader.upload(i.path);
+            yield imageGallaryModel_1.default.create({
+                image: secure_url,
+                imageID: public_id,
+                title,
+            });
+        }
+        return res.status(201).json({
+            message: "image Gallary added successfully",
+            status: 201,
+        });
+    }
+    catch (error) {
+        return res.status(404).json({
+            message: "Error adding image Gallary",
+            data: error,
+        });
+    }
+});
+exports.addManyImageGallary = addManyImageGallary;
+const gallaryView = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const gallary = yield imageGallaryModel_1.default.find();
+        return res.status(201).json({
+            message: "get all gallary",
+            data: gallary,
+            status: 200,
+        });
+    }
+    catch (error) {
+        return res.status(404).json({
+            message: "Errorgetting gallary",
+            data: error,
+        });
+    }
+});
+exports.gallaryView = gallaryView;
