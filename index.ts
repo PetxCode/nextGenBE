@@ -20,7 +20,7 @@ app.use("/api", user);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:8080, https://just-next-gen.web.app"],
+    origin: ["http://localhost:8080", "https://just-next-gen.web.app"],
     methods: ["GET", "POST"],
   },
 });
