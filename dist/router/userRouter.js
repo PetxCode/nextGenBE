@@ -14,6 +14,6 @@ router.route("/stage-2/:userID").patch(userController_1.stage2Score);
 router.route("/stage-3/:userID").patch(userController_1.stage3Score);
 router.route("/stage-4/:userID").patch(userController_1.stage4Score);
 router.route("/user/:userID").get(userController_1.readSingleAccount);
-router.route("/elete/:userID").delete(userController_1.deleteSingleAccount);
+router.route("/delete/:userID").delete(userController_1.deleteSingleAccount);
 router.route("/users/").get(userController_1.userAccount);
 exports.default = router;
