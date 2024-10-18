@@ -74,6 +74,7 @@ const loginAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { email, password } = req.body;
         const userAccount = yield userModel_1.default.findOne({ email });
+        console.log(req.body);
         if (userAccount) {
             if (userAccount.password === password) {
                 return res.status(201).json({
