@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gallaryView = exports.addManyImageGallary = exports.addImageGallary = exports.deleteUserAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
+exports.gallaryView = exports.addManyImageGallary = exports.addImageGallary = exports.deleteUserAccount = exports.deleteSingleAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
 const userModel_1 = __importDefault(require("../model/userModel"));
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
 const imageGallaryModel_1 = __importDefault(require("../model/imageGallaryModel"));
@@ -471,6 +471,24 @@ const readSingleAccount = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.readSingleAccount = readSingleAccount;
+const deleteSingleAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userID } = req.params;
+        const users = yield userModel_1.default.findByIdAndDelete(userID);
+        return res.status(200).json({
+            message: "delete single user",
+            data: users,
+            status: 200,
+        });
+    }
+    catch (error) {
+        return res.status(404).json({
+            message: "Error deleting account",
+            data: error,
+        });
+    }
+});
+exports.deleteSingleAccount = deleteSingleAccount;
 const deleteUserAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userID } = req.params;

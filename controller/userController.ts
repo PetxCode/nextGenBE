@@ -670,6 +670,27 @@ export const readSingleAccount = async (
   }
 };
 
+export const deleteSingleAccount = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { userID } = req.params;
+    const users = await userModel.findByIdAndDelete(userID);
+
+    return res.status(200).json({
+      message: "delete single user",
+      data: users,
+      status: 200,
+    });
+  } catch (error: any) {
+    return res.status(404).json({
+      message: "Error deleting account",
+      data: error,
+    });
+  }
+};
+
 export const deleteUserAccount = async (
   req: Request,
   res: Response

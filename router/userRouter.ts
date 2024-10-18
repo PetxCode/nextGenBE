@@ -11,6 +11,7 @@ import {
   stage3Score,
   stage4Score,
   userAccount,
+  deleteSingleAccount,
 } from "../controller/userController";
 import multer from "multer";
 const router: Router = Router();
@@ -27,5 +28,6 @@ router.route("/stage-2/:userID").patch(stage2Score);
 router.route("/stage-3/:userID").patch(stage3Score);
 router.route("/stage-4/:userID").patch(stage4Score);
 router.route("/user/:userID").get(readSingleAccount);
+router.route("/elete/:userID").delete(deleteSingleAccount);
 router.route("/users/").get(userAccount);
 export default router;
