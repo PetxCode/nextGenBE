@@ -119,6 +119,7 @@ export const stage1Score = async (
     const {
       name,
       option,
+      optionPicked,
       pickedAt,
       time,
       point,
@@ -144,6 +145,7 @@ export const stage1Score = async (
         getData = {
           name,
           option,
+          optionPicked,
           pickedAt,
           time,
           point,
@@ -194,6 +196,7 @@ export const stage1Score = async (
                 questionID,
                 name,
                 option,
+                optionPicked,
                 pickedAt,
                 time,
                 point,
@@ -247,6 +250,7 @@ export const stage2Score = async (
       name,
       option,
       pickedAt,
+      optionPicked,
       time,
       point,
       school,
@@ -274,6 +278,7 @@ export const stage2Score = async (
           time,
           point,
           school,
+          optionPicked,
           stage,
           correct,
           questionID,
@@ -321,6 +326,7 @@ export const stage2Score = async (
                 name,
                 option,
                 pickedAt,
+                optionPicked,
                 time,
                 point,
                 school,
@@ -373,6 +379,7 @@ export const stage3Score = async (
       name,
       option,
       pickedAt,
+      optionPicked,
       time,
       point,
       school,
@@ -397,6 +404,7 @@ export const stage3Score = async (
           name,
           option,
           pickedAt,
+          optionPicked,
           time,
           point,
           school,
@@ -447,6 +455,7 @@ export const stage3Score = async (
                 name,
                 option,
                 pickedAt,
+                optionPicked,
                 time,
                 point,
                 school,
@@ -501,6 +510,8 @@ export const stage4Score = async (
       option,
       pickedAt,
       time,
+
+      optionPicked,
       point,
       school,
       stage,
@@ -508,6 +519,7 @@ export const stage4Score = async (
       questionID,
     } = req.body;
     //
+
     if (user) {
       const getResult = await userModel.findById(userID);
 
@@ -523,6 +535,7 @@ export const stage4Score = async (
         getData = {
           name,
           option,
+          optionPicked,
           pickedAt,
           time,
           point,
@@ -574,6 +587,7 @@ export const stage4Score = async (
                 name,
                 option,
                 pickedAt,
+                optionPicked,
                 time,
                 point,
                 school,

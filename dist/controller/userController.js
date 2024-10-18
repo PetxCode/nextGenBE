@@ -107,7 +107,7 @@ const stage1Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
-        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        const { name, option, optionPicked, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
         //
         if (user) {
             const getResult = yield userModel_1.default.findById(userID);
@@ -118,6 +118,7 @@ const stage1Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 getData = {
                     name,
                     option,
+                    optionPicked,
                     pickedAt,
                     time,
                     point,
@@ -150,6 +151,7 @@ const stage1Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                             questionID,
                             name,
                             option,
+                            optionPicked,
                             pickedAt,
                             time,
                             point,
@@ -189,7 +191,7 @@ const stage2Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
-        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        const { name, option, pickedAt, optionPicked, time, point, school, stage, correct, questionID, } = req.body;
         //
         if (user) {
             const getResult = yield userModel_1.default.findById(userID);
@@ -203,6 +205,7 @@ const stage2Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     time,
                     point,
                     school,
+                    optionPicked,
                     stage,
                     correct,
                     questionID,
@@ -232,6 +235,7 @@ const stage2Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                             name,
                             option,
                             pickedAt,
+                            optionPicked,
                             time,
                             point,
                             school,
@@ -270,7 +274,7 @@ const stage3Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
-        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        const { name, option, pickedAt, optionPicked, time, point, school, stage, correct, questionID, } = req.body;
         //
         if (user) {
             const getResult = yield userModel_1.default.findById(userID);
@@ -281,6 +285,7 @@ const stage3Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     name,
                     option,
                     pickedAt,
+                    optionPicked,
                     time,
                     point,
                     school,
@@ -313,6 +318,7 @@ const stage3Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                             name,
                             option,
                             pickedAt,
+                            optionPicked,
                             time,
                             point,
                             school,
@@ -351,7 +357,7 @@ const stage4Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const { userID } = req.params;
         const user = yield userModel_1.default.findById(userID);
-        const { name, option, pickedAt, time, point, school, stage, correct, questionID, } = req.body;
+        const { name, option, pickedAt, time, optionPicked, point, school, stage, correct, questionID, } = req.body;
         //
         if (user) {
             const getResult = yield userModel_1.default.findById(userID);
@@ -361,6 +367,7 @@ const stage4Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 getData = {
                     name,
                     option,
+                    optionPicked,
                     pickedAt,
                     time,
                     point,
@@ -394,6 +401,7 @@ const stage4Score = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                             name,
                             option,
                             pickedAt,
+                            optionPicked,
                             time,
                             point,
                             school,
