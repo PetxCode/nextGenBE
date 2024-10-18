@@ -506,6 +506,7 @@ exports.addImageGallary = addImageGallary;
 const addManyImageGallary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { title } = req.body;
+        console.log(req === null || req === void 0 ? void 0 : req.files);
         for (let i of req === null || req === void 0 ? void 0 : req.files) {
             const { secure_url, public_id } = yield cloudinary_1.default.uploader.upload(i.path);
             yield imageGallaryModel_1.default.create({

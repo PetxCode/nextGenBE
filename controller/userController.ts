@@ -710,6 +710,8 @@ export const addManyImageGallary = async (req: any, res: Response) => {
   try {
     const { title } = req.body;
 
+    console.log(req?.files);
+
     for (let i of req?.files) {
       const { secure_url, public_id }: any = await cloudinary.uploader.upload(
         i.path
@@ -723,7 +725,6 @@ export const addManyImageGallary = async (req: any, res: Response) => {
     }
     return res.status(201).json({
       message: "image Gallary added successfully",
-
       status: 201,
     });
   } catch (error: any) {
