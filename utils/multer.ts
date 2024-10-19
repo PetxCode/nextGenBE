@@ -16,7 +16,7 @@ export const fileManyUpload = multer({ storage: storage }).array("avatar");
 
 export const fileUploads = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 60 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     file.mimetype === "application/json";
     cb(null, true);
