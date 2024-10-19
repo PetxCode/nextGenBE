@@ -45,7 +45,7 @@ io.on(
     });
 
     socket.on("num", () => {
-      io.emit("num", 20);
+      io.emit("num", 40);
     });
 
     socket.on("presentStage", (stage) => {

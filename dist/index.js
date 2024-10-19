@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
         io.emit("questionNumber", { question, reset: null, numb: 20 });
     });
     socket.on("num", () => {
-        io.emit("num", 20);
+        io.emit("num", 40);
     });
     socket.on("presentStage", (stage) => {
         io.emit("presentStage", stage);
