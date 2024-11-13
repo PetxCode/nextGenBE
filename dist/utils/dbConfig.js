@@ -16,8 +16,9 @@ exports.dbConfig = void 0;
 const mongoose_1 = require("mongoose");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-// const url: string = "mongodb://127.0.0.1:27017/stemDB";
-const url = "mongodb+srv://skillscapeofficier:skillscapeofficier@cluster0.0dubq.mongodb.net/nextGenSTEMDB?retryWrites=true&w=majority&appName=Cluster0";
+const url = "mongodb://127.0.0.1:27017/stemDB";
+// const url: string =
+//   "mongodb+srv://skillscapeofficier:skillscapeofficier@cluster0.0dubq.mongodb.net/nextGenSTEMDB?retryWrites=true&w=majority&appName=Cluster0";
 const dbConfig = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, mongoose_1.connect)(url)
         .then(() => {

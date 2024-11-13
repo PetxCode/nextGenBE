@@ -12,8 +12,9 @@ import {
   stage4Score,
   userAccount,
   deleteSingleAccount,
+  makePayment,
+  verifyTransaction,
 } from "../controller/userController";
-import multer from "multer";
 const router: Router = Router();
 import { fileManyUpload, fileUpload } from "../utils/multer";
 
@@ -30,4 +31,7 @@ router.route("/stage-4/:userID").patch(stage4Score);
 router.route("/user/:userID").get(readSingleAccount);
 router.route("/delete/:userID").delete(deleteSingleAccount);
 router.route("/users/").get(userAccount);
+
+router.route("/donate/").post(makePayment);
+router.route("/verify-donation/:ref").get(verifyTransaction);
 export default router;

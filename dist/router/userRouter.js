@@ -16,4 +16,6 @@ router.route("/stage-4/:userID").patch(userController_1.stage4Score);
 router.route("/user/:userID").get(userController_1.readSingleAccount);
 router.route("/delete/:userID").delete(userController_1.deleteSingleAccount);
 router.route("/users/").get(userController_1.userAccount);
+router.route("/donate/").post(userController_1.makePayment);
+router.route("/verify-donation/:ref").get(userController_1.verifyTransaction);
 exports.default = router;

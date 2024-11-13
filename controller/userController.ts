@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import userModel from "../model/userModel";
-import { streamUpload } from "../utils/streamifier";
 import cloudinary from "../utils/cloudinary";
 import gallaryModel from "../model/imageGallaryModel";
+import https from "node:https";
+import axios from "axios";
+import env from "dotenv";
+
+env.config();
 
 export const createAdminAccount = async (
   req: Request,
@@ -786,6 +790,93 @@ export const gallaryView = async (
     return res.status(404).json({
       message: "Errorgetting gallary",
       data: error,
+    });
+  }
+};
+
+// let APP_URL_DEPLOY = "http://localhost:8080";
+let APP_URL_DEPLOY = "https://just-next-gen.web.app";
+
+export const makePayment = async (req: Request, res: Response) => {
+  try {
+    const { email, amount } = req.body;
+    let token = "thank-you";
+
+    const params = JSON.stringify({
+      email,
+      amount: (amount * 100).toString(),
+      callback_url: `${APP_URL_DEPLOY}/${token}/successful-payment`,
+      metadata: {
+        cancel_action: `${APP_URL_DEPLOY}`,
+      },
+      channels: ["card"],
+    });
+
+    const options = {
+      hostname: "api.paystack.co",
+      port: 443,
+      path: "/transaction/initialize",
+      method: "POST",
+      headers: {
+        Authorization: `Bearer sk_test_c9f764c9d687cf28275c9cd131eb835393e87df6`,
+        "Content-Type": "application/json",
+      },
+    };
+    // ${process.env.APP_PAYSTACK}
+    const request = https
+      .request(options, (response: any) => {
+        let data = "";
+
+        response.on("data", (chunk: any) => {
+          data += chunk;
+        });
+
+        response.on("end", () => {
+          return res.status(201).json({
+            message: "processing payment",
+            data: JSON.parse(data),
+            status: 201,
+          });
+        });
+      })
+      .on("error", (error: any) => {
+        console.error(error);
+      });
+
+    request.write(params);
+    request.end();
+  } catch (error: any) {
+    return res.status(404).json({
+      message: "Error",
+      data: error.message,
+      status: 404,
+    });
+  }
+};
+
+export const verifyTransaction = async (req: Request, res: Response) => {
+  try {
+    const { ref } = req.params;
+
+    const url: string = `https://api.paystack.co/transaction/verify/${ref}`;
+
+    await axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${process.env.APP_PAYSTACK}`,
+        },
+      })
+      .then((data) => {
+        return res.status(200).json({
+          message: "payment verified",
+          status: 200,
+          data: data.data,
+        });
+      });
+  } catch (error: any) {
+    res.status(404).json({
+      message: "Errror",
+      data: error.message,
     });
   }
 };

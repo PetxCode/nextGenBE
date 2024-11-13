@@ -12,10 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gallaryView = exports.addManyImageGallary = exports.addImageGallary = exports.deleteUserAccount = exports.deleteSingleAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
+exports.verifyTransaction = exports.makePayment = exports.gallaryView = exports.addManyImageGallary = exports.addImageGallary = exports.deleteUserAccount = exports.deleteSingleAccount = exports.readSingleAccount = exports.userAccount = exports.stage4Score = exports.stage3Score = exports.stage2Score = exports.stage1Score = exports.loginAccount = exports.createAccount = exports.createAdminAccount = void 0;
 const userModel_1 = __importDefault(require("../model/userModel"));
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
 const imageGallaryModel_1 = __importDefault(require("../model/imageGallaryModel"));
+const node_https_1 = __importDefault(require("node:https"));
+const axios_1 = __importDefault(require("axios"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const createAdminAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, password, schoolName, phoneNumber, avatar } = req.body;
@@ -572,3 +576,84 @@ const gallaryView = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.gallaryView = gallaryView;
+// let APP_URL_DEPLOY = "http://localhost:8080";
+let APP_URL_DEPLOY = "https://just-next-gen.web.app";
+const makePayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, amount } = req.body;
+        let token = "thank-you";
+        const params = JSON.stringify({
+            email,
+            amount: (amount * 100).toString(),
+            callback_url: `${APP_URL_DEPLOY}/${token}/successful-payment`,
+            metadata: {
+                cancel_action: `${APP_URL_DEPLOY}`,
+            },
+            channels: ["card"],
+        });
+        const options = {
+            hostname: "api.paystack.co",
+            port: 443,
+            path: "/transaction/initialize",
+            method: "POST",
+            headers: {
+                Authorization: `Bearer sk_test_c9f764c9d687cf28275c9cd131eb835393e87df6`,
+                "Content-Type": "application/json",
+            },
+        };
+        // ${process.env.APP_PAYSTACK}
+        const request = node_https_1.default
+            .request(options, (response) => {
+            let data = "";
+            response.on("data", (chunk) => {
+                data += chunk;
+            });
+            response.on("end", () => {
+                return res.status(201).json({
+                    message: "processing payment",
+                    data: JSON.parse(data),
+                    status: 201,
+                });
+            });
+        })
+            .on("error", (error) => {
+            console.error(error);
+        });
+        request.write(params);
+        request.end();
+    }
+    catch (error) {
+        return res.status(404).json({
+            message: "Error",
+            data: error.message,
+            status: 404,
+        });
+    }
+});
+exports.makePayment = makePayment;
+const verifyTransaction = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { ref } = req.params;
+        const url = `https://api.paystack.co/transaction/verify/${ref}`;
+        yield axios_1.default
+            .get(url, {
+            headers: {
+                Authorization: `Bearer ${process.env.APP_PAYSTACK}`,
+            },
+        })
+            .then((data) => {
+            return res.status(200).json({
+                message: "payment verified",
+                status: 200,
+                data: data.data,
+            });
+        });
+    }
+    catch (error) {
+        res.status(404).json({
+            message: "Errror",
+            data: error.message,
+        });
+    }
+});
+exports.verifyTransaction = verifyTransaction;
