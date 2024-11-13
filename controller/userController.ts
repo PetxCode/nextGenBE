@@ -639,7 +639,7 @@ export const userAccount = async (
 ): Promise<Response> => {
   try {
     const users = await userModel.find();
-
+    console.log("KKK");
     return res.status(201).json({
       message: "get all users",
       data: users,
