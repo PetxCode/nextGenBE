@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
         io.emit("test", res);
     });
     socket.on("questionNumber", (question) => {
-        io.emit("questionNumber", { question, reset: null, numb: 20 });
+        io.emit("questionNumber", { question, reset: null, numb: 30 });
     });
     socket.on("num", () => {
         io.emit("num", 40);
