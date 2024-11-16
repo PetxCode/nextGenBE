@@ -20,11 +20,13 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const dbConfig_1 = require("./utils/dbConfig");
 const userRouter_1 = __importDefault(require("./router/userRouter"));
+const questionRouter_1 = __importDefault(require("./router/questionRouter"));
 const port = process.env.PORT || 2244;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use("/api", userRouter_1.default);
+app.use("/api", questionRouter_1.default);
 const server = node_http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {

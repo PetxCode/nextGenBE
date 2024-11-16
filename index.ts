@@ -8,6 +8,7 @@ env.config();
 import { dbConfig } from "./utils/dbConfig";
 
 import user from "./router/userRouter";
+import question from "./router/questionRouter";
 
 const port: any = process.env.PORT || 2244;
 const app: Application = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api", user);
+app.use("/api", question);
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -61,6 +63,7 @@ io.on(
     });
   }
 );
+
 server.listen(port, async () => {
   dbConfig();
 });
