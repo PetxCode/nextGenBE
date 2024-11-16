@@ -64,7 +64,7 @@ const readQuestionByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.readQuestionByAdmin = readQuestionByAdmin;
 const updateQuestionByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     try {
         const { userID, mainID } = req.params;
         const { stage, questionID } = req.body;
@@ -81,18 +81,18 @@ const updateQuestionByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, fu
                         }),
                     } }),
             }, { new: true });
-            const read = question[0].question[`${stage}`].data.filter((el) => {
+            const read = (_d = (_c = question[0].question[`${stage}`]) === null || _c === void 0 ? void 0 : _c.data) === null || _d === void 0 ? void 0 : _d.filter((el) => {
                 return el.start === true;
             });
-            const specific = read.find((el) => {
+            const specific = read === null || read === void 0 ? void 0 : read.find((el) => {
                 return el.id === parseInt(questionID);
             });
             yield testQuestionModel_1.default.findByIdAndUpdate(mainID, {
-                specific,
+                specific: Object.assign(Object.assign({}, specific), { stage }),
             }, { new: true });
             return res.status(201).json({
                 message: "question updated successfully",
-                read: (_c = question[0]) === null || _c === void 0 ? void 0 : _c.specific,
+                read: (_e = question[0]) === null || _e === void 0 ? void 0 : _e.specific,
                 data: question,
                 status: 201,
             });

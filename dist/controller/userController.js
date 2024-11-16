@@ -443,7 +443,6 @@ exports.stage4Score = stage4Score;
 const userAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield userModel_1.default.find();
-        console.log("KKK");
         return res.status(201).json({
             message: "get all users",
             data: users,

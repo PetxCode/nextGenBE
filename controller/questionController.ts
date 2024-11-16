@@ -87,18 +87,18 @@ export const updateQuestionByAdmin = async (
         { new: true }
       );
 
-      const read = question[0].question[`${stage}`].data.filter((el: any) => {
+      const read = question[0].question[`${stage}`]?.data?.filter((el: any) => {
         return el.start === true;
       });
 
-      const specific = read.find((el: any) => {
+      const specific = read?.find((el: any) => {
         return el.id === parseInt(questionID);
       });
 
       await testQuestionModel.findByIdAndUpdate(
         mainID,
         {
-          specific,
+          specific: { ...specific, stage },
         },
         { new: true }
       );
